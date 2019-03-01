@@ -43,6 +43,15 @@ class App extends Component {
           failCallback(err);
         })
       break;
+    case 'DELETE':
+      axios.delete(url, payload)
+        .then(res => {
+          successCallback(res.data);
+        })
+        .catch(err => {
+          failCallback(err);
+        })
+      break;
     default:
       console.error(`Request to ${url} failed. Please check your config.`);
     }
@@ -56,6 +65,11 @@ class App extends Component {
   addSmurf = (smurf) => {
     const setSmurfsToState = (data) => this.setDataToState(data, ['smurfs']);
     this.request(apiURL, 'POST', setSmurfsToState, null, smurf);
+  }
+
+  deleteSmurf = (id) => {
+    const setSmurfsToState = (data) => this.setDataToState(data, ['smurfs']);
+    this.request(`${apiURL}/${id}`, 'DELETE', setSmurfsToState);
   }
 
   //====== STATE UTILITY FUNCTIONS ======//
@@ -74,7 +88,10 @@ class App extends Component {
           exact
           path="/"
           render={pr =>
-            <Smurfs {...pr} smurfs={this.state.smurfs} />
+            <Smurfs {...pr}
+              smurfs={this.state.smurfs}
+              deleteSmurfFunction={this.deleteSmurf}
+            />
         }/>
         <Route
           path="/smurf-form"

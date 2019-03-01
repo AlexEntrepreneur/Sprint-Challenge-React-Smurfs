@@ -15,6 +15,7 @@ class SmurfForm extends Component {
 
     if (formIsFilled){
       this.props.addSmurf(smurf);
+      this.props.history.push('/');
     }
   };
 
