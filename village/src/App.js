@@ -21,29 +21,38 @@ class App extends Component {
   //====== API REQUEST CODE ======//
 
   request = (url, method, successCallback, failCallback, payload) => {
-    let receivedData = null;
     switch (method) {
     case 'GET':
       axios.get(url)
-        .then((res) => {
-          receivedData = res.data;
+        .then(res => {
           successCallback(res.data);
         })
-        .catch((res) => {
-          receivedData = res.data;
-          failCallback(res.data);
+        .catch(err => {
+          failCallback(err);
+        })
+      break;
+    case 'POST':
+      axios.post(url, payload)
+        .then(res => {
+          successCallback(res.data);
+        })
+        .catch(err => {
+          failCallback(err);
         })
       break;
     default:
-      console.error('request failed');
-
-      return receivedData;
+      console.error(`Request to ${url} failed. Please check your config.`);
     }
   }
 
   getSmurfs = () => {
     const setSmurfsToState = (data) => this.setDataToState(data, ['smurfs']);
     this.request(apiURL, 'GET', setSmurfsToState);
+  }
+
+  addSmurf = (smurf) => {
+    const setSmurfsToState = (data) => this.setDataToState(data, ['smurfs']);
+    this.request(apiURL, 'POST', setSmurfsToState, null, smurf);
   }
 
   //====== STATE UTILITY FUNCTIONS ======//
