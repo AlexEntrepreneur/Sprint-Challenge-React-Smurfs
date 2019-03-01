@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
-
-import './App.css';
-import SmurfForm from './components/SmurfForm';
+import axios from 'axios';
+import { Route } from 'react-router-dom';
+import SiteNav from './components/SiteNav';
 import Smurfs from './components/Smurfs';
+import SmurfForm from './components/SmurfForm'
+import './App.css';
+
+
+const apiURL = 'http://localhost:3333/smurfs';
 
 class App extends Component {
   constructor(props) {
@@ -11,14 +16,89 @@ class App extends Component {
       smurfs: [],
     };
   }
-  // add any needed code to ensure that the smurfs collection exists on state and it has data coming from the server
-  // Notice what your map function is looping over and returning inside of Smurfs.
-  // You'll need to make sure you have the right properties on state and pass them down to props.
+
+  componentDidMount() {
+    this.getSmurfs();
+  }
+
+  //====== API REQUEST CODE ======//
+
+  request = (url, method, successCallback, failCallback, payload) => {
+    switch (method) {
+    case 'GET':
+      axios.get(url)
+        .then(res => {
+          successCallback(res.data);
+        })
+        .catch(err => {
+          failCallback(err);
+        })
+      break;
+    case 'POST':
+      axios.post(url, payload)
+        .then(res => {
+          successCallback(res.data);
+        })
+        .catch(err => {
+          failCallback(err);
+        })
+      break;
+    case 'DELETE':
+      axios.delete(url, payload)
+        .then(res => {
+          successCallback(res.data);
+        })
+        .catch(err => {
+          failCallback(err);
+        })
+      break;
+    default:
+      console.error(`Request to ${url} failed. Please check your config.`);
+    }
+  }
+
+  getSmurfs = () => {
+    const setSmurfsToState = (data) => this.setDataToState(data, ['smurfs']);
+    this.request(apiURL, 'GET', setSmurfsToState);
+  }
+
+  addSmurf = (smurf) => {
+    const setSmurfsToState = (data) => this.setDataToState(data, ['smurfs']);
+    this.request(apiURL, 'POST', setSmurfsToState, null, smurf);
+  }
+
+  deleteSmurf = (id) => {
+    const setSmurfsToState = (data) => this.setDataToState(data, ['smurfs']);
+    this.request(`${apiURL}/${id}`, 'DELETE', setSmurfsToState);
+  }
+
+  //====== STATE UTILITY FUNCTIONS ======//
+
+  setDataToState = (data, stateKeysArray) => {
+    for (let key in stateKeysArray) {
+      this.setState({ [stateKeysArray[key]]: data });
+    }
+  }
+
   render() {
     return (
       <div className="App">
-        <SmurfForm />
-        <Smurfs smurfs={this.state.smurfs} />
+        <SiteNav />
+        <Route
+          exact
+          path="/"
+          render={pr =>
+            <Smurfs {...pr}
+              smurfs={this.state.smurfs}
+              deleteSmurfFunction={this.deleteSmurf}
+            />
+        }/>
+        <Route
+          path="/smurf-form"
+          render={pr =>
+            <SmurfForm {...pr} addSmurf={this.addSmurf} />
+          }
+        />
       </div>
     );
   }
