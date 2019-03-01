@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import './App.css';
-import SmurfForm from './components/SmurfForm';
+import { Route } from 'react-router-dom';
+import SiteNav from './components/SiteNav';
 import Smurfs from './components/Smurfs';
+import SmurfForm from './components/SmurfForm'
+import './App.css';
+
 
 const apiURL = 'http://localhost:3333/smurfs';
 
@@ -66,8 +69,19 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <SmurfForm addSmurf={this.addSmurf} />
-        <Smurfs smurfs={this.state.smurfs} />
+        <SiteNav />
+        <Route
+          exact
+          path="/"
+          render={pr =>
+            <Smurfs {...pr} smurfs={this.state.smurfs} />
+        }/>
+        <Route
+          path="/smurf-form"
+          render={pr =>
+            <SmurfForm {...pr} addSmurf={this.addSmurf} />
+          }
+        />
       </div>
     );
   }
