@@ -1,50 +1,41 @@
 import React, { Component } from 'react';
 
 class SmurfForm extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      name: '',
-      age: '',
-      height: ''
-    };
-  }
+  smurfNameInput = React.createRef();
+  smurfAgeInput = React.createRef();
+  smurfHeightInput = React.createRef();
 
-  addSmurf = event => {
+  onSmurfFormSubmit = event => {
     event.preventDefault();
-    // add code to create the smurf using the api
+    const nameValue = this.smurfNameInput.current.value;
+    const ageValue = this.smurfAgeInput.current.value;
+    const heightValue = this.smurfHeightInput.current.value;
+    const smurf = { name: nameValue, age: ageValue, height: heightValue }
+    const formIsFilled = nameValue && ageValue && heightValue;
 
-    this.setState({
-      name: '',
-      age: '',
-      height: ''
-    });
-  }
-
-  handleInputChange = e => {
-    this.setState({ [e.target.name]: e.target.value });
+    if (formIsFilled){
+      this.props.addSmurf(smurf);
+    }
   };
 
   render() {
     return (
       <div className="SmurfForm">
-        <form onSubmit={this.addSmurf}>
+        <form onSubmit={this.onSmurfFormSubmit}>
           <input
-            onChange={this.handleInputChange}
             placeholder="name"
-            value={this.state.name}
+            ref={this.smurfNameInput}
             name="name"
           />
           <input
-            onChange={this.handleInputChange}
+            type="number"
             placeholder="age"
-            value={this.state.age}
+            ref={this.smurfAgeInput}
             name="age"
           />
           <input
-            onChange={this.handleInputChange}
             placeholder="height"
-            value={this.state.height}
+            ref={this.smurfHeightInput}
             name="height"
           />
           <button type="submit">Add to the village</button>
